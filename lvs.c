@@ -509,7 +509,6 @@ void init_lvs(void)
 	netsnmp_register_read_only_instance(netsnmp_create_handler_registration("lvsVersion", get_lvs_var, lvsVersion_oid, OID_LENGTH(lvsVersion_oid), HANDLER_CAN_RONLY));
 	netsnmp_register_read_only_instance(netsnmp_create_handler_registration("lvsNumServices", get_lvs_var, lvsNumServices_oid, OID_LENGTH(lvsNumServices_oid), HANDLER_CAN_RONLY));
 	netsnmp_register_read_only_instance(netsnmp_create_handler_registration("lvsNumServices", get_lvs_var, lvsHashTableSize_oid, OID_LENGTH(lvsHashTableSize_oid), HANDLER_CAN_RONLY));
-	netsnmp_register_read_only_instance(netsnmp_create_handler_registration("lvsNumServices", get_lvs_var, lvsHashTableSize_oid, OID_LENGTH(lvsHashTableSize_oid), HANDLER_CAN_RONLY));
 	netsnmp_register_read_only_instance(netsnmp_create_handler_registration("lvsTcpTimeOut", get_lvs_var, lvsTcpTimeOut_oid, OID_LENGTH(lvsTcpTimeOut_oid), HANDLER_CAN_RONLY));
 	netsnmp_register_read_only_instance(netsnmp_create_handler_registration("lvsTcpTimeOutFin", get_lvs_var, lvsTcpTimeOutFin_oid, OID_LENGTH(lvsTcpTimeOutFin_oid), HANDLER_CAN_RONLY));
 	netsnmp_register_read_only_instance(netsnmp_create_handler_registration("lvsUdpTimeOut", get_lvs_var, lvsUdpTimeOut_oid, OID_LENGTH(lvsUdpTimeOut_oid), HANDLER_CAN_RONLY));
