@@ -1,0 +1,9 @@
+.*.sw[po]
+*.[oa]
+*.so
+*.bak
+*.old
+*.orig
+*.rej
+core
+*~
