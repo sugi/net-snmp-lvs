@@ -25,8 +25,5 @@ clean:
 	make -C libipvs clean
 	rm -f lvs.o lvs.so
 
-tar: clean
-	cd ..; \
-	ln -s $(NAME) $(VERSDIR); \
-	tar czf $(TARFILE) --exclude CVS --dereference $(VERSDIR); \
-	rm $(VERSDIR)
+tar:
+	git archive --format tar.gz --prefix=$(VERSDIR)/ -o $(TARFILE) HEAD
