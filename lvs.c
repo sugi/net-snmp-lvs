@@ -92,7 +92,7 @@ static
 int get_lvs_var(netsnmp_mib_handler* handler, netsnmp_handler_registration* reginfo,
                 netsnmp_agent_request_info* reqinfo, netsnmp_request_info* requests)
 {
-	u_char string[SPRINT_MAX_LEN];
+	char string[SPRINT_MAX_LEN];
 	int len;
 
 	if (last_setup!=time(NULL))
@@ -153,7 +153,7 @@ static
 netsnmp_variable_list* lvsServiceTable_get_first_data_point(void **my_loop_context, void **my_data_context,
                           netsnmp_variable_list *put_index_data, netsnmp_iterator_info *mydata)
 {
-	int index = 0;
+	long index = 0;
 	netsnmp_variable_list* vptr;
 
 	if (last_setup!=time(NULL))
@@ -180,7 +180,7 @@ static
 netsnmp_variable_list* lvsServiceTable_get_next_data_point(void** my_loop_context, void** my_data_context,
                          netsnmp_variable_list* put_index_data, netsnmp_iterator_info* mydata)
 {
-	int index = (int)*my_loop_context;
+	long index = (long)*my_loop_context;
 	netsnmp_variable_list *vptr;
 
 	index++;
@@ -202,8 +202,8 @@ int lvsServiceTable_handler(netsnmp_mib_handler* handler, netsnmp_handler_regist
 	netsnmp_request_info* request;
 	netsnmp_table_request_info* table_info;
 	netsnmp_variable_list* var;
-	int svcindex;
-	unsigned int tmp;
+	long svcindex;
+	unsigned long tmp;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,5,0)
 	struct ip_vs_service_entry* entrytable;
@@ -219,7 +219,7 @@ int lvsServiceTable_handler(netsnmp_mib_handler* handler, netsnmp_handler_regist
 		/* the following extracts the my_data_context pointer set in
 		the loop functions above.  You can then use the results to
 		help return data for the columns of the lvsServiceTable table in question */
-		svcindex = (int) netsnmp_extract_iterator_context(request);
+		svcindex = (long) netsnmp_extract_iterator_context(request);
 		if (svcindex==0) {
 			if (reqinfo->mode==MODE_GET)
 				netsnmp_set_request_error(reqinfo, requests, SNMP_NOSUCHINSTANCE);
@@ -233,27 +233,27 @@ int lvsServiceTable_handler(netsnmp_mib_handler* handler, netsnmp_handler_regist
 		if (reqinfo->mode==MODE_GET) {
 			switch(table_info->colnum) {
 			    case COLUMN_LVSSERVICENUMBER:
-				snmp_set_var_typed_value(var, ASN_INTEGER, (u_char*)&svcindex, sizeof(int));
+				snmp_set_var_typed_value(var, ASN_INTEGER, (u_char*)&svcindex, sizeof(svcindex));
 				break;
 			    case COLUMN_LVSSERVICESCHEDTYPE:
 				snmp_set_var_typed_value(var, ASN_OCTET_STR, entrytable->sched_name, strlen(entrytable->sched_name));
 				break;
 			    case COLUMN_LVSSERVICEPROTO:
 				tmp = entrytable->protocol;
-				snmp_set_var_typed_value(var, ASN_INTEGER, (u_char*)&tmp, sizeof(int));
+				snmp_set_var_typed_value(var, ASN_INTEGER, (u_char*)&tmp, sizeof(tmp));
 				break;
 			    case COLUMN_LVSSERVICEADDR:
-				snmp_set_var_typed_value(var, ASN_IPADDRESS, (u_char*) &entrytable->addr, sizeof(int));
+				snmp_set_var_typed_value(var, ASN_IPADDRESS, (u_char*) &entrytable->addr, sizeof(entrytable->addr));
 				break;
 			    case COLUMN_LVSSERVICEPORT:
 				tmp = htons(entrytable->port);
-				snmp_set_var_typed_value(var, ASN_INTEGER, (u_char*) &tmp, sizeof(int));
+				snmp_set_var_typed_value(var, ASN_INTEGER, (u_char*) &tmp, sizeof(tmp));
 				break;
 			    case COLUMN_LVSSERVICEFWMARK:
-				snmp_set_var_typed_value(var, ASN_INTEGER, (u_char*) &entrytable->fwmark, sizeof(int));
+				snmp_set_var_typed_value(var, ASN_INTEGER, (u_char*) &entrytable->fwmark, sizeof(entrytable->fwmark));
 				break;
 			    case COLUMN_LVSSERVICEPERSISTTIMEOUT:
-				snmp_set_var_typed_value(var, ASN_INTEGER, (u_char*) &entrytable->timeout, sizeof(int));
+				snmp_set_var_typed_value(var, ASN_INTEGER, (u_char*) &entrytable->timeout, sizeof(entrytable->timeout));
 				break;
 			    case COLUMN_LVSSERVICEPERSISTNETMASK:
 				snmp_set_var_typed_value(var, ASN_IPADDRESS, (u_char*) &entrytable->netmask, sizeof(entrytable->netmask));
@@ -382,7 +382,7 @@ int lvsRealTable_handler(netsnmp_mib_handler* handler, netsnmp_handler_registrat
 	struct ip_vs_dest_user* destentry;
 #endif
 	struct ip_vs_stats_user* stats;
-	int tmp;
+	long tmp;
 
 	for (request = requests; request; request = request->next) {
 		var = request->requestvb;
