@@ -1,0 +1,17 @@
+OC-MIB DEFINITIONS ::= BEGIN
+IMPORTS
+    OBJECT-TYPE, MODULE-IDENTITY, enterprises FROM SNMPv2-SMI;
+ 
+
+opencon MODULE-IDENTITY
+    LAST-UPDATED "200110150000Z"
+    ORGANIZATION "lvs mib"
+    CONTACT-INFO
+        "email:      rb@ssn.tp"
+    DESCRIPTION
+	"The LVS-SNMP MIB."
+    REVISION	 "200110150000Z"
+    DESCRIPTION
+	"openconnect Namespace"
+    ::= { enterprises 8225 }
+END

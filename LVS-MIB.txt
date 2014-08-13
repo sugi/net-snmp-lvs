@@ -1,0 +1,477 @@
+LVS-MIB DEFINITIONS ::= BEGIN
+IMPORTS
+    OBJECT-TYPE, NOTIFICATION-TYPE, MODULE-IDENTITY,
+    Integer32, enterprises, Counter32, Counter64, Gauge32
+        FROM SNMPv2-SMI
+ 
+    TEXTUAL-CONVENTION, TimeInterval
+        FROM SNMPv2-TC
+
+    opencon 
+	FROM OC-MIB;
+
+lvs MODULE-IDENTITY
+    LAST-UPDATED "200111060000Z"
+    ORGANIZATION "lvs mib"
+    CONTACT-INFO
+        "email:      rb@ssn.tp"
+    DESCRIPTION
+	"The LVS-SNMP MIB."
+    REVISION	 "200111060000Z"
+    DESCRIPTION
+	"lvs service defined"
+    REVISION	 "200203060000Z"
+    DESCRIPTION
+	"cleanups
+	 added realserver"
+    ::= { opencon 4711 }
+
+
+lvsVersion OBJECT-TYPE
+    SYNTAX	OCTET STRING (SIZE(0..1024))
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Version of the LVS kernel modules"
+    ::= { lvs 1 }
+
+lvsNumServices OBJECT-TYPE
+    SYNTAX	INTEGER
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	 "Number of lvs services"
+    ::= { lvs 2 }
+
+lvsHashTableSize OBJECT-TYPE
+    SYNTAX	INTEGER
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	 "Hashtable Size"
+    ::= { lvs 3 }
+
+lvsTcpTimeOut OBJECT-TYPE
+    SYNTAX	TimeInterval
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	 "TCP Timeout in 1/100 s"
+    ::= { lvs 4 }
+
+lvsTcpFinTimeOut OBJECT-TYPE
+    SYNTAX	TimeInterval
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	 "TCP_FIN Timeout in 1/100 s"
+    ::= { lvs 5 }
+
+lvsUdpTimeOut OBJECT-TYPE
+    SYNTAX	TimeInterval
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	 "TCP_FIN Timeout in 1/100 s"
+    ::= { lvs 6 }
+
+lvsDaemonState OBJECT-TYPE
+    SYNTAX	INTEGER {
+                    none(0),
+                    master(1),
+                    backup(2),
+                }
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	 "Daemon state"
+    ::= { lvs 7 }
+
+lvsMcastInt OBJECT-TYPE
+    SYNTAX	OCTET STRING (SIZE(0..16))
+    MAX-ACCESS	read-only
+    STATUS	current
+    DESCRIPTION
+	"Multicast Interface Name"
+    ::= { lvs 8 }
+
+-- service table
+
+
+lvsServiceTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF lvsServiceEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+            "A table containing lvs service-specific information."
+    ::= { lvs 17 }
+
+lvsServiceEntry OBJECT-TYPE
+	SYNTAX      LvsServiceEntry
+	MAX-ACCESS  not-accessible
+	STATUS      current
+	DESCRIPTION
+		"information about a lvs service"
+	INDEX   { 	lvsServiceNumber }
+	::= { lvsServiceTable 1 }
+
+LvsServiceEntry ::= SEQUENCE {
+        lvsServiceNumber		INTEGER,
+        lvsServiceSchedType		OCTET STRING,
+        lvsServiceProto       		INTEGER,
+        lvsServiceAddr	      		IpAddress,
+        lvsServicePort        		INTEGER,
+        lvsServiceFWMark      		INTEGER, 
+	lvsServicePersistTimeout	TimeInterval,
+	lvsServiceNumDests		INTEGER, 
+	lvsServiceStatsConns		Counter32,
+	lvsServiceStatsInPkts		Counter32,
+	lvsServiceStatsOutPkts		Counter32,
+	lvsServiceStatsInBytes		Counter64,
+	lvsServiceStatsOutBytes		Counter64,
+	lvsServiceRateCps		Gauge32,
+	lvsServiceRateInPPS		Gauge32,
+	lvsServiceRateOutPPS		Gauge32,
+	lvsServiceRateInBPS		Gauge32,
+	lvsServiceRateOutBPS		Gauge32
+	}
+
+lvsServiceNumber OBJECT-TYPE
+	SYNTAX      INTEGER (0..65535)
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The lvs service number"
+	::= { lvsServiceEntry 1 }
+    
+
+lvsServiceSchedType OBJECT-TYPE
+	SYNTAX      OCTET STRING (SIZE(0..16))
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"Scheduler Type"
+	::= { lvsServiceEntry 2 }
+
+lvsServiceProto	OBJECT-TYPE
+	SYNTAX      INTEGER {
+                    fwmark(-1),
+                    tcp(6),
+                    udp(17),
+                }
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"Protocol (tcp/udp) or packets marked by fwmark"
+	::= { lvsServiceEntry 3 }
+
+lvsServiceAddr	OBJECT-TYPE
+	SYNTAX      IpAddress
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"IP Address of the Service a.k.a Virtual IP (VIP)"
+	::= { lvsServiceEntry 4 }
+
+lvsServicePort OBJECT-TYPE
+	SYNTAX      INTEGER {
+		    fwmark(-1),
+		}
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The port number of the service"
+	::= { lvsServiceEntry 5 }
+    
+lvsServiceFWMark OBJECT-TYPE
+	SYNTAX      INTEGER {
+			undefined(0);
+		}
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The Firewall Mark which tags connections to be processed by this lvs service"
+	::= { lvsServiceEntry 6 }
+
+lvsServicePersistTimeout OBJECT-TYPE
+	SYNTAX      TimeInterval
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The Timeout of persistent connections in 1/100 s"
+	::= { lvsServiceEntry 7 }
+
+lvsServicePersistNetmask	OBJECT-TYPE
+	SYNTAX      IpAddress
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The netmask of persitent connections"
+	::= { lvsServiceEntry 8 }
+
+lvsServiceNumDests OBJECT-TYPE
+	SYNTAX      INTEGER (0..65535)
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the number of realservers for this virtual server"
+	::= { lvsServiceEntry 9 }
+
+lvsServiceStatsConns OBJECT-TYPE
+	SYNTAX      Counter32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the total number of connections which has been handled by this lvs service since the beginning"
+	::= { lvsServiceEntry 10 }
+
+lvsServiceStatsInPkts OBJECT-TYPE
+	SYNTAX      Counter32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the total number of incomming pakets to this lvs service"
+	::= { lvsServiceEntry 11 }
+
+lvsServiceStatsOutPkts OBJECT-TYPE
+	SYNTAX      Counter32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the total number of outgoing pakets from this lvs service (always 0 for LVS-DR)"
+	::= { lvsServiceEntry 12 }
+
+lvsServiceStatsInBytes OBJECT-TYPE
+	SYNTAX      Counter64
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the total number of incomming bytes from this lvs service"
+	::= { lvsServiceEntry 13 }
+
+lvsServiceStatsOutBytes OBJECT-TYPE
+	SYNTAX      Counter64
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the number of outgoing bytes from this lvs service (always 0  for LVS-DR)"
+	::= { lvsServiceEntry 14 }
+
+lvsServiceRateCps OBJECT-TYPE
+	SYNTAX      Gauge32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the current connection rate"
+	::= { lvsServiceEntry 15 }
+
+lvsServiceRateInPPS OBJECT-TYPE
+	SYNTAX      Gauge32 
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the current in packet rate"
+	::= { lvsServiceEntry 16 }
+
+lvsServiceRateOutPPS OBJECT-TYPE
+	SYNTAX      Gauge32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the current out packet rate"
+	::= { lvsServiceEntry 17 }
+
+lvsServiceRateInBPS OBJECT-TYPE
+	SYNTAX      Gauge32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the current in byte rate"
+	::= { lvsServiceEntry 18 }
+
+lvsServiceRateOutBPS OBJECT-TYPE
+	SYNTAX      Gauge32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the current out byte rate"
+	::= { lvsServiceEntry 19 }
+
+
+-- realserver table
+
+
+lvsRealTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF lvsRealEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION
+            "A table containing per realserver information."
+    ::= { lvs 18 }
+
+lvsRealEntry OBJECT-TYPE
+	SYNTAX      LvsRealEntry
+	MAX-ACCESS  not-accessible
+	STATUS      current
+	DESCRIPTION
+		"information about a lvs real server"
+	INDEX   { 	lvsRealServiceNumber,
+			lvsRealServerNumber
+		}
+	
+	::= { lvsRealTable 1 }
+
+LvsRealEntry ::= SEQUENCE {
+        lvsRealServiceNumber		INTEGER,
+        lvsRealServerNumber		INTEGER,
+        lvsRealServerAddr		IpAddress,
+        lvsRealServerPort		INTEGER,
+	lvsRealServerFlags		INTEGER,
+	lvsRealServerWeight		INTEGER,
+	lvsRealStatsConns		Counter32,
+	lvsRealStatsInPkts		Counter32,
+	lvsRealStatsOutPkts		Counter32,
+	lvsRealStatsInBytes		Counter64,
+	lvsRealStatsOutBytes		Counter64,
+	lvsRealRateCps			Gauge32,
+	lvsRealRateInPPS		Gauge32,
+	lvsRealRateOutPPS		Gauge32,
+	lvsRealRateInBPS		Gauge32,
+	lvsRealRateOutBPS		Gauge32
+	}
+
+lvsRealServiceNumber OBJECT-TYPE
+	SYNTAX      INTEGER (0..65535)
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The lvs service number"
+	::= { lvsRealEntry 1 }
+    
+
+lvsRealServerNumber OBJECT-TYPE
+	SYNTAX      INTEGER (0..65535)
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The lvs realserver number"
+	::= { lvsRealEntry 2 }
+
+lvsRealServerAddr OBJECT-TYPE
+	SYNTAX      IpAddress
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The lvs realserver IP"
+	::= { lvsRealEntry 3 }
+
+lvsRealServerPort OBJECT-TYPE
+	SYNTAX      INTEGER (0..65535)
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The lvs realserver Port"
+	::= { lvsRealEntry 4 }
+
+lvsRealServerFlags OBJECT-TYPE
+	SYNTAX      INTEGER{
+			masq(0),
+			local(1),
+			tunnel(2),
+			route(3)
+			}
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The lvs realserver weight"
+	::= { lvsRealEntry 5 }
+
+lvsRealServerWeight OBJECT-TYPE
+	SYNTAX      INTEGER (0..65535)
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"The lvs realserver weight"
+	::= { lvsRealEntry 6 }
+
+lvsRealStatsConns OBJECT-TYPE
+	SYNTAX      Counter32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the total number of connections which has been handled by this lvs realserver since the beginning"
+	::= { lvsRealEntry 7 }
+
+lvsRealStatsInPkts OBJECT-TYPE
+	SYNTAX      Counter32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the total number of incomming pakets to this lvs realserver"
+	::= { lvsRealEntry 8 }
+
+lvsRealStatsOutPkts OBJECT-TYPE
+	SYNTAX      Counter32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the total number of outgoing pakets from this lvs realserver (always 0 for LVS-DR)"
+	::= { lvsRealEntry 9 }
+
+lvsRealStatsInBytes OBJECT-TYPE
+	SYNTAX      Counter64
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the total number of incomming bytes from this lvs realserver"
+	::= { lvsRealEntry 10 }
+
+lvsRealStatsOutBytes OBJECT-TYPE
+	SYNTAX      Counter64
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the number of outgoing bytes from this lvs realserver (always 0  for LVS-DR)"
+	::= { lvsRealEntry 11 }
+
+lvsRealRateCps OBJECT-TYPE
+	SYNTAX      Gauge32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the current connection rate"
+	::= { lvsRealEntry 12 }
+
+lvsRealRateInPPS OBJECT-TYPE
+	SYNTAX      Gauge32 
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the current in packet rate"
+	::= { lvsRealEntry 13 }
+
+lvsRealRateOutPPS OBJECT-TYPE
+	SYNTAX      Gauge32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the current out packet rate"
+	::= { lvsRealEntry 14 }
+
+lvsRealRateInBPS OBJECT-TYPE
+	SYNTAX      Gauge32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the current in byte rate"
+	::= { lvsRealEntry 15 }
+
+lvsRealRateOutBPS OBJECT-TYPE
+	SYNTAX      Gauge32
+	MAX-ACCESS  read-only
+	STATUS      current
+	DESCRIPTION
+		"the current out byte rate"
+	::= { lvsRealEntry 16 }
+
+END
