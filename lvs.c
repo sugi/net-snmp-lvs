@@ -82,6 +82,7 @@ void setup_snmp_ipvs(void)
 	mydestprev = NULL;
 	for (s = 0; s<ipvs_services->num_services; s++) {
 		sentry = ipvs_get_dests(&ipvs_services->entrytable[s]);
+		ipvs_services->entrytable[s].num_dests = sentry->num_dests;
 		for (d = 0; d<sentry->num_dests; d++) {
 			mydest = SNMP_MALLOC_STRUCT(Destination);
 			if (mydestprev==NULL) {
@@ -116,7 +117,7 @@ int get_lvs_var(netsnmp_mib_handler* handler, netsnmp_handler_registration* regi
 		snmp_set_var_typed_value(requests->requestvb, ASN_OCTET_STR, string, len);
 		return SNMP_ERR_NOERROR;
 	    case 2:
-		snmp_set_var_typed_value(requests->requestvb, ASN_INTEGER, (u_char*) &ipvs_info.num_services, sizeof(ipvs_info.num_services));
+		snmp_set_var_typed_value(requests->requestvb, ASN_INTEGER, (u_char*) &ipvs_services->num_services, sizeof(ipvs_services->num_services));
 		return SNMP_ERR_NOERROR;
 	    case 3:
 		snmp_set_var_typed_value(requests->requestvb, ASN_INTEGER, (u_char*) &ipvs_info.size, sizeof(ipvs_info.size));
