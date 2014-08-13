@@ -3,10 +3,10 @@ VERSION=$(shell cat VERSION)
 VERSDIR := $(NAME)-$(VERSION)
 TARFILE := $(NAME)-$(VERSION).tar.gz
 CC := gcc 
-CFLAGS := `net-snmp-config --cflags` -Ilibipvs -I/usr/src/linux/include -Wall -g
+CFLAGS := -fPIC $(shell pkg-config --cflags libnl-3.0 libnl-genl-3.0) `net-snmp-config --cflags`  -Ilibipvs -Wall -g
 DEFINES := -DHAVE_NET_IP_VS_H
 DLFLAGS := -fPIC -shared -g
-LIBS := `net-snmp-config --netsnmp-libs`
+LIBS := $(shell pkg-config --libs libnl-3.0 libnl-genl-3.0) `net-snmp-config --netsnmp-libs`
 LIBIPVS := libipvs/libipvs.a
 DLFLAGS := -fPIC -shared 
 
