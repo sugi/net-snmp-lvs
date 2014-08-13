@@ -39,6 +39,13 @@ static struct Destination* ipvs_destination;
 static time_t last_setup;
 
 static
+void set_netsnmp_u64(U64* u64, __u64 raw)
+{
+  u64->high = (u_long)((raw >> 32) & 0xffffffff);
+  u64->low  = (u_long)(raw & 0xffffffff);
+}
+
+static
 void setup_snmp_ipvs(void)
 {
 	int s, d;
@@ -211,6 +218,7 @@ int lvsServiceTable_handler(netsnmp_mib_handler* handler, netsnmp_handler_regist
 	struct ip_vs_service_user* entrytable;
 #endif
 	struct ip_vs_stats_user* stats;
+        U64 u64counter;
 
 	for (request = requests; request; request = request->next) {
 		var = request->requestvb;
@@ -271,10 +279,12 @@ int lvsServiceTable_handler(netsnmp_mib_handler* handler, netsnmp_handler_regist
 				snmp_set_var_typed_value(var, ASN_COUNTER, (u_char *) &stats->outpkts, sizeof(stats->outpkts));
 				break;
 			    case COLUMN_LVSSERVICESTATSINBYTES:
-				snmp_set_var_typed_value(var, ASN_COUNTER64, (u_char *) &stats->inbytes, sizeof(stats->inbytes));
+                                set_netsnmp_u64(&u64counter, stats->inbytes);
+				snmp_set_var_typed_value(var, ASN_COUNTER64, &u64counter, sizeof(u64counter));
 				break;
 			    case COLUMN_LVSSERVICESTATSOUTBYTES:
-				snmp_set_var_typed_value(var, ASN_COUNTER64, (u_char *)&stats->outbytes, sizeof(stats->outbytes));
+                                set_netsnmp_u64(&u64counter, stats->outbytes);
+				snmp_set_var_typed_value(var, ASN_COUNTER64, &u64counter, sizeof(u64counter));
 				break;
 			    case COLUMN_LVSSERVICERATECPS:
 				snmp_set_var_typed_value(var, ASN_GAUGE, (u_char *) &stats->cps, sizeof(stats->cps));
@@ -383,6 +393,7 @@ int lvsRealTable_handler(netsnmp_mib_handler* handler, netsnmp_handler_registrat
 #endif
 	struct ip_vs_stats_user* stats;
 	long tmp;
+        U64 u64counter;
 
 	for (request = requests; request; request = request->next) {
 		var = request->requestvb;
@@ -434,10 +445,12 @@ int lvsRealTable_handler(netsnmp_mib_handler* handler, netsnmp_handler_registrat
 				snmp_set_var_typed_value(var, ASN_COUNTER, (u_char *) &stats->outpkts, sizeof(stats->outpkts) );
 				break;
 			    case COLUMN_LVSREALSTATSINBYTES:
-				snmp_set_var_typed_value(var, ASN_COUNTER64, (u_char *) &stats->inbytes, sizeof(stats->inbytes));
+                                set_netsnmp_u64(&u64counter, stats->inbytes);
+				snmp_set_var_typed_value(var, ASN_COUNTER64, &u64counter, sizeof(u64counter));
 				break;
 			    case COLUMN_LVSREALSTATSOUTBYTES:
-				snmp_set_var_typed_value(var, ASN_COUNTER64, (u_char *) &stats->outbytes, sizeof(stats->outbytes));
+                                set_netsnmp_u64(&u64counter, stats->outbytes);
+				snmp_set_var_typed_value(var, ASN_COUNTER64, &u64counter, sizeof(u64counter));
 				break;
 			    case COLUMN_LVSREALRATECPS:
 				snmp_set_var_typed_value(var, ASN_GAUGE, (u_char *) &stats->cps, sizeof(stats->cps));
