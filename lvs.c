@@ -29,7 +29,8 @@ struct Destination {
 #else
 	struct ip_vs_dest_user* dest_entry;
 #endif
-	struct Destination* next; 
+	struct ip_vs_get_dests* dests;
+	struct Destination* next;
 };
 
 static struct ip_vs_get_services* ipvs_services;
@@ -74,6 +75,8 @@ void setup_snmp_ipvs(void)
 	while (mydest) {
 		mydestprev = mydest;
 		mydest = mydest->next;
+		if (mydestprev->dst_index == 1)
+			SNMP_FREE(mydestprev->dests);
 		SNMP_FREE(mydestprev);
 	}
 	mydestprev = NULL;
@@ -86,6 +89,7 @@ void setup_snmp_ipvs(void)
 			} else {
 				mydestprev->next = mydest;
 			}
+			mydest->dests = sentry;
 			mydest->dest_entry = &sentry->entrytable[d];
 			mydest->svc_index = s+1;
 			mydest->dst_index = d+1;
