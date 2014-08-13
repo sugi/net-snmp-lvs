@@ -41,8 +41,8 @@ static time_t last_setup;
 static
 void set_netsnmp_u64(U64* u64, __u64 raw)
 {
-  u64->high = (u_long)((raw >> 32) & 0xffffffff);
-  u64->low  = (u_long)(raw & 0xffffffff);
+	u64->high = (u_long)((raw >> 32) & 0xffffffff);
+	u64->low  = (u_long)(raw & 0xffffffff);
 }
 
 static
@@ -279,11 +279,11 @@ int lvsServiceTable_handler(netsnmp_mib_handler* handler, netsnmp_handler_regist
 				snmp_set_var_typed_value(var, ASN_COUNTER, (u_char *) &stats->outpkts, sizeof(stats->outpkts));
 				break;
 			    case COLUMN_LVSSERVICESTATSINBYTES:
-                                set_netsnmp_u64(&u64counter, stats->inbytes);
+				set_netsnmp_u64(&u64counter, stats->inbytes);
 				snmp_set_var_typed_value(var, ASN_COUNTER64, &u64counter, sizeof(u64counter));
 				break;
 			    case COLUMN_LVSSERVICESTATSOUTBYTES:
-                                set_netsnmp_u64(&u64counter, stats->outbytes);
+				set_netsnmp_u64(&u64counter, stats->outbytes);
 				snmp_set_var_typed_value(var, ASN_COUNTER64, &u64counter, sizeof(u64counter));
 				break;
 			    case COLUMN_LVSSERVICERATECPS:
@@ -445,11 +445,11 @@ int lvsRealTable_handler(netsnmp_mib_handler* handler, netsnmp_handler_registrat
 				snmp_set_var_typed_value(var, ASN_COUNTER, (u_char *) &stats->outpkts, sizeof(stats->outpkts) );
 				break;
 			    case COLUMN_LVSREALSTATSINBYTES:
-                                set_netsnmp_u64(&u64counter, stats->inbytes);
+				set_netsnmp_u64(&u64counter, stats->inbytes);
 				snmp_set_var_typed_value(var, ASN_COUNTER64, &u64counter, sizeof(u64counter));
 				break;
 			    case COLUMN_LVSREALSTATSOUTBYTES:
-                                set_netsnmp_u64(&u64counter, stats->outbytes);
+				set_netsnmp_u64(&u64counter, stats->outbytes);
 				snmp_set_var_typed_value(var, ASN_COUNTER64, &u64counter, sizeof(u64counter));
 				break;
 			    case COLUMN_LVSREALRATECPS:
