@@ -1,7 +1,7 @@
 /*
  * libipvs.h:	header file for the library ipvs
  *
- * Version:	$Id: libipvs.h,v 1.3.2.1 2002/11/14 10:05:28 wensong Exp $
+ * Version:	$Id: libipvs.h,v 1.7 2003/06/08 09:31:39 wensong Exp $
  *
  * Authors:	Wensong Zhang <wensong@linuxvirtualserver.org>
  *
@@ -10,12 +10,16 @@
 #ifndef _LIBIPVS_H
 #define _LIBIPVS_H
 
-#ifdef HAVE_NET_IP_VS_H
-#include <net/ip_vs.h>
-#else
 #include "ip_vs.h"
-#endif
 
+
+#define MINIMUM_IPVS_VERSION_MAJOR      1
+#define MINIMUM_IPVS_VERSION_MINOR      1
+#define MINIMUM_IPVS_VERSION_PATCH      4
+
+#ifndef IPVS_VERSION
+#define IPVS_VERSION(x,y,z)		(((x)<<16)+((y)<<8)+(z))
+#endif
 
 /*
  * The default IPVS_SVC_PERSISTENT_TIMEOUT is a little larger than average
@@ -29,6 +33,15 @@
  */
 #define IPVS_SVC_PERSISTENT_TIMEOUT	(6*60)
 
+
+typedef struct ip_vs_service_user	ipvs_service_t;
+typedef struct ip_vs_dest_user		ipvs_dest_t;
+typedef struct ip_vs_timeout_user	ipvs_timeout_t;
+typedef struct ip_vs_daemon_user	ipvs_daemon_t;
+typedef struct ip_vs_service_entry	ipvs_service_entry_t;
+typedef struct ip_vs_dest_entry		ipvs_dest_entry_t;
+
+
 /* ipvs info variable */
 extern struct ip_vs_getinfo ipvs_info;
 
@@ -41,40 +54,71 @@ extern int ipvs_getinfo(void);
 /* get the version number */
 extern unsigned int ipvs_version(void);
 
-/* set command */
-extern int ipvs_command(int cmd, struct ip_vs_rule_user *urule);
+/* flush all the rules */
+extern int ipvs_flush(void);
+
+/* add a virtual service */
+extern int ipvs_add_service(ipvs_service_t *svc);
+
+/* update a virtual service with new options */
+extern int ipvs_update_service(ipvs_service_t *svc);
+
+/* delete a virtual service */
+extern int ipvs_del_service(ipvs_service_t *svc);
+
+/* zero the counters of a service or all */
+extern int ipvs_zero_service(ipvs_service_t *svc);
+
+/* add a destination server into a service */
+extern int ipvs_add_dest(ipvs_service_t *svc, ipvs_dest_t *dest);
+
+/* update a destination server with new options */
+extern int ipvs_update_dest(ipvs_service_t *svc, ipvs_dest_t *dest);
+
+/* remove a destination server from a service */
+extern int ipvs_del_dest(ipvs_service_t *svc, ipvs_dest_t *dest);
+
+/* set timeout */
+extern int ipvs_set_timeout(ipvs_timeout_t *to);
+
+/* start a connection synchronizaiton daemon (master/backup) */
+extern int ipvs_start_daemon(ipvs_daemon_t *dm);
+
+/* stop a connection synchronizaiton daemon (master/backup) */
+extern int ipvs_stop_daemon(ipvs_daemon_t *dm);
+
 
 /* get all the ipvs services */
 extern struct ip_vs_get_services *ipvs_get_services(void);
 
-/* sort services */
-typedef int (*ipvs_service_cmp_t)(struct ip_vs_service_user *,
-				  struct ip_vs_service_user *);
-extern int ipvs_cmp_services(struct ip_vs_service_user *s1,
-			     struct ip_vs_service_user *s2);
+/* sort the service entries */
+typedef int (*ipvs_service_cmp_t)(ipvs_service_entry_t *,
+				  ipvs_service_entry_t *);
+extern int ipvs_cmp_services(ipvs_service_entry_t *s1,
+			     ipvs_service_entry_t *s2);
 extern void ipvs_sort_services(struct ip_vs_get_services *s,
 			       ipvs_service_cmp_t f);
 
 /* get the destination array of the specified service */
-extern struct ip_vs_get_dests *ipvs_get_dests(struct ip_vs_service_user *svc);
+extern struct ip_vs_get_dests *ipvs_get_dests(ipvs_service_entry_t *svc);
 
-/* sort destinations */
-typedef int (*ipvs_dest_cmp_t)(struct ip_vs_dest_user *,
-			       struct ip_vs_dest_user *);
-extern int ipvs_cmp_dests(struct ip_vs_dest_user *d1,
-			  struct ip_vs_dest_user *d2);
+/* sort the destination entries */
+typedef int (*ipvs_dest_cmp_t)(ipvs_dest_entry_t *,
+			       ipvs_dest_entry_t *);
+extern int ipvs_cmp_dests(ipvs_dest_entry_t *d1,
+			  ipvs_dest_entry_t *d2);
 extern void ipvs_sort_dests(struct ip_vs_get_dests *d,
 			    ipvs_dest_cmp_t f);
 
-/* get ipvs service */
-extern struct ip_vs_service_user *
-ipvs_get_service(__u32 fwmark, __u16 protocol, __u32 vaddr, __u16 vport);
+/* get an ipvs service entry */
+extern ipvs_service_entry_t *
+ipvs_get_service(__u32 fwmark, __u16 af, __u16 protocol, union nf_inet_addr addr, __u16 port);
 
 /* get ipvs timeout */
-extern struct ip_vs_timeout_user *ipvs_get_timeouts(void);
+extern ipvs_timeout_t *ipvs_get_timeout(void);
 
 /* get ipvs daemon information */
-extern struct ip_vs_daemon_user *ipvs_get_daemon(void);
+extern ipvs_daemon_t *ipvs_get_daemon(void);
 
 /* close the socket */
 extern void ipvs_close(void);
