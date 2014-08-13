@@ -1,0 +1,18 @@
+Source: net-snmp-lvs-module
+Section: admin
+Priority: optional
+Maintainer: Tatsuki Sugiura <sugi@nemui.org>
+Build-Depends: debhelper (>= 9), pkg-config, libsnmp-dev, libnl-3-dev, libnl-genl-3-dev
+Standards-Version: 3.9.5
+Homepage: https://github.com/sugi/net-snmp-lvs
+#Vcs-Git: git://anonscm.debian.org/collab-maint/net-snmp-lvs-module.git
+#Vcs-Browser: http://anonscm.debian.org/?p=collab-maint/net-snmp-lvs-module.git;a=summary
+
+Package: net-snmp-lvs-module
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: NetSNMP plugin module for lvs
+ net-snmpd-lvs-module is a dynamicaly loadable shared object
+ to get the configuration and some statistical information
+ from the Linux kernel with IP virtual server support
+ (also known as Linux Virtual Server).

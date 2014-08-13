@@ -1,0 +1,9 @@
+net-snmp-lvs-module for Debian
+------------------------------
+
+To enable lvs module, add following line to /etc/snmp/snmpd.conf.
+-------------------------------------------
+dlmod lvs /usr/lib/net-snmp-lvs-module/lvs.so
+-------------------------------------------
+
+ -- Tatsuki Sugiura <sugi@nemui.org>  Thu, 14 Aug 2014 01:17:32 +0900
