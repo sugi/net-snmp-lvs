@@ -2,7 +2,7 @@ Source: net-snmp-lvs-module
 Section: admin
 Priority: optional
 Maintainer: Tatsuki Sugiura <sugi@nemui.org>
-Build-Depends: debhelper (>= 9), pkg-config, libsnmp-dev, libnl-3-dev, libnl-genl-3-dev
+Build-Depends: debhelper (>= 9), dpkg-dev (>= 1.16.1~), pkg-config, libsnmp-dev, libnl-3-dev, libnl-genl-3-dev
 Standards-Version: 3.9.5
 Homepage: https://github.com/sugi/net-snmp-lvs
 #Vcs-Git: git://anonscm.debian.org/collab-maint/net-snmp-lvs-module.git
