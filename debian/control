@@ -11,7 +11,7 @@ Homepage: https://github.com/sugi/net-snmp-lvs
 Package: net-snmp-lvs-module
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: snmpd
+Recommends: snmpd, snmp-mibs-downloader
 Description: NetSNMP plugin module for lvs
  net-snmpd-lvs-module is a dynamicaly loadable shared object
  to get the configuration and some statistical information

@@ -6,4 +6,8 @@ To enable lvs module, add following line to /etc/snmp/snmpd.conf.
 dlmod lvs /usr/lib/net-snmp-lvs-module/lvs.so
 -------------------------------------------
 
+To enable MIB translation, install snmp-mibs-downloader package
+from non-free for SNMPv2-SMI and SNMPv2-TC module.
+You may need to add non-free apt-line to your sources.list.
+
  -- Tatsuki Sugiura <sugi@nemui.org>  Thu, 14 Aug 2014 01:17:32 +0900
