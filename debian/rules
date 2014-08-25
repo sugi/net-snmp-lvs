@@ -23,6 +23,9 @@ DESTDIR=$(CURDIR)/debian/net-snmp-lvs-module
 %:
 	dh $@ 
 
+override_dh_auto_build:
+	make LD='gcc -lc'
+
 override_dh_auto_install:
 	mkdir -p $(DESTDIR)/usr/lib/net-snmp-lvs-module \
 		$(DESTDIR)/usr/share/snmp/mibs
