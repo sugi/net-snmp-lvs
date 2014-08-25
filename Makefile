@@ -26,4 +26,4 @@ clean:
 	rm -f lvs.o lvs.so
 
 tar:
-	git archive --format tar.gz --prefix=$(VERSDIR)/ -o $(TARFILE) HEAD
+	git archive --format tar.gz --prefix=$(VERSDIR)/ -o $(TARFILE) v$(VERSION)
